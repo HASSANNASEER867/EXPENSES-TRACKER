@@ -104,6 +104,7 @@ const AuthForms = () => {
             <div className="w-full h-full rounded-full bg-white/20 backdrop-blur-sm p-8 flex flex-col items-center justify-center shadow-xl">
               <div className="w-64">
                 <h2 className="text-xl font-bold mb-4 text-gray-800 text-center">SIGN UP</h2>
+                <h3 className="text-lg font-semibold mb-4 text-gray-800 text-center">CREATE AN ACCOUNT</h3>
                 <input
                   type="text"
                   placeholder="Enter Full Name"
@@ -119,9 +120,12 @@ const AuthForms = () => {
                   placeholder="Enter Password"
                   className="w-full mb-3 p-2 text-sm border-b-2 border-black bg-transparent text-white placeholder-white focus:outline-none"
                 />
-                <button className="w-full bg-red-500 text-white py-2 rounded-full mb-3 text-sm hover:bg-red-600 transition-colors">
-                  Submit
-                </button>
+                 <button className="w-full text-red-500 py-2 rounded-full mb-3 text-sm shadow-md">
+  Submit
+</button>
+
+
+
                 <p className="text-xs text-center text-gray-700">
                   Already Have An Account?{" "}
                   <button onClick={toggleFlip} className="text-blue-500 hover:underline">
@@ -135,6 +139,7 @@ const AuthForms = () => {
             <div className="w-full h-full rounded-full bg-white/20 backdrop-blur-sm p-8 flex flex-col items-center justify-center shadow-xl">
               <div className="w-64">
                 <h2 className="text-xl font-bold mb-4 text-gray-800 text-center">SIGN IN</h2>
+                <h3 className="text-lg font-semibold mb-4 text-gray-800 text-center">SIGN IN TO YOUR ACCOUNT</h3>
                 <form onSubmit={handleSignIn}>
                   <input
                     type="email"
@@ -154,7 +159,7 @@ const AuthForms = () => {
                     className="w-full mb-3 p-2 text-sm border-b-2 border-black bg-transparent text-white placeholder-white focus:outline-none"
                   />
                   {errors.password && <p className="text-xs text-red-500">{errors.password}</p>}
-                  <div className="mb-3">
+                  <div className="mb-3 flex items-center space-x-4">
                     <label className="flex items-center text-sm text-white">
                       <input
                         type="checkbox"
@@ -165,11 +170,6 @@ const AuthForms = () => {
                       />
                       Remember Me
                     </label>
-                    {errors.rememberMe && (
-                      <p className="text-xs text-red-500">{errors.rememberMe}</p>
-                    )}
-                  </div>
-                  <div className="mb-3">
                     <label className="flex items-center text-sm text-white">
                       <input
                         type="checkbox"
@@ -178,18 +178,42 @@ const AuthForms = () => {
                         onChange={handleChange}
                         className="mr-2 accent-black"
                       />
-                      Terms and Conditions
+                      Terms
                     </label>
-                    {errors.terms && <p className="text-xs text-red-500">{errors.terms}</p>}
                   </div>
-                  <button className="w-full bg-red-500 text-white py-2 rounded-full mb-3 text-sm hover:bg-red-600 transition-colors">
-                    Submit
-                  </button>
+                  {errors.rememberMe && (
+                    <p className="text-xs text-red-500">{errors.rememberMe}</p>
+                  )}
+                  {errors.terms && <p className="text-xs text-red-500">{errors.terms}</p>}
+                  <button className="w-full text-red-500 py-2 rounded-full mb-3 text-sm shadow-md">
+  Submit
+</button>
+
+
                 </form>
+
+                {/* Google Sign In Button */}
                 <div
                   id="googleSignInButton"
-                  className="w-full py-2 rounded-full mb-3 text-sm flex items-center justify-center"
-                />
+                  className="w-full py-2 rounded-full text-sm flex items-center justify-center"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    // backgroundColor: "white",
+                    // border: "2px solid #34A853",
+                    color: "#34A853",
+                    // borderRadius: "9999px",
+                    padding: "10px",
+                    cursor: "pointer",
+                  }}
+                  onClick={signInWithGoogle}
+                >
+                  
+                  <span className="mr-2" style={{ color: "black" }}>Sign in with</span>
+                  <span style={{ color: "#34A853" }}>Google</span>
+                </div>
+
                 <p className="text-xs text-center text-gray-700">
                   Don't Have An Account?{" "}
                   <button onClick={toggleFlip} className="text-blue-500 hover:underline">

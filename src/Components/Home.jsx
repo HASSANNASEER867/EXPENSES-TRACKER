@@ -1,267 +1,321 @@
-import React, { useState } from 'react';
-import { ArrowUpRight, ArrowDownRight, Plus } from 'lucide-react';
+import React, { useState } from "react";
+import { Check, X, Database } from "lucide-react";
 
-const TransactionList = () => {
-  const [transactions, setTransactions] = useState([
-    { id: 1, title: 'New machine', amount: -1400, date: '28 Dec 2024', type: 'expense' },
-    { id: 2, title: 'Hi', amount: 1, date: '10 Jan 2023', type: 'income' },
-    { id: 3, title: 'Wow', amount: 45000, date: '9 Jan 2023', type: 'income' },
-    { id: 4, title: 'Booking', amount: -4000, date: '08 Jan 2023', type: 'expense' },
-    { id: 5, title: 'Mobile', amount: -100000, date: '02 Nov 2022', type: 'expense' },
-    { id: 6, title: 'Chair purchased', amount: -4000, date: '01 Jun 2021', type: 'expense' },
-    { id: 7, title: 'Book purchasedd', amount: -2000, date: '17 May 2021', type: 'expense' },
-    { id: 8, title: 'Lcd purchased', amount: -40000, date: '26 Mar 2021', type: 'expense' },
-    { id: 9, title: 'Hehehe', amount: 10000, date: '06 Jan 2021', type: 'income' },
-    { id: 10, title: 'Bike', amount: -1500, date: '17 Oct 2020', type: 'expense' },
-    { id: 11, title: 'Bike sold', amount: 30000, date: '16 May 2020', type: 'income' },
-    { id: 12, title: 'Bond open', amount: 100000, date: '16 Jan 2019', type: 'income' }
-  ]);
+const ExpenseTracker = () => {
+  const initialRecords = [
+    {
+      id: 1,
+      title: "New machine",
+      amount: -1400,
+      date: "2024-12-28",
+      type: "expense",
+    },
+    { id: 2, title: "Hi", amount: 1, date: "2023-01-10", type: "income" },
+    { id: 3, title: "Wow", amount: 45000, date: "2023-01-09", type: "income" },
+    {
+      id: 4,
+      title: "Booking",
+      amount: -4000,
+      date: "2023-01-08",
+      type: "expense",
+    },
+    {
+      id: 5,
+      title: "Mobile",
+      amount: -100000,
+      date: "2022-11-02",
+      type: "expense",
+    },
+    {
+      id: 6,
+      title: "Chair purchased",
+      amount: -4000,
+      date: "2021-06-01",
+      type: "expense",
+    },
+    {
+      id: 7,
+      title: "Book purchasedd",
+      amount: -2000,
+      date: "2021-05-17",
+      type: "expense",
+    },
+    {
+      id: 8,
+      title: "Lcd purchased",
+      amount: -40000,
+      date: "2021-03-26",
+      type: "expense",
+    },
+    {
+      id: 9,
+      title: "Hehehe",
+      amount: 10000,
+      date: "2021-01-06",
+      type: "income",
+    },
+    {
+      id: 10,
+      title: "Bike",
+      amount: -1500,
+      date: "2020-10-17",
+      type: "expense",
+    },
+    {
+      id: 11,
+      title: "Bike sold",
+      amount: 30000,
+      date: "2020-05-16",
+      type: "income",
+    },
+    {
+      id: 12,
+      title: "Bond open",
+      amount: 100000,
+      date: "2019-01-16",
+      type: "income",
+    },
+  ];
 
-  const [formData, setFormData] = useState({
-    title: '',
-    amount: '',
-    date: '',
-    type: 'expense',
-    editingId: null, // Track the transaction being edited
+  const [records, setRecords] = useState(initialRecords);
+  const [newRecord, setNewRecord] = useState({
+    title: "",
+    amount: "",
+    date: "",
+    type: "expense",
+    backgroundImage:
+      "https://images.unsplash.com/photo-1507917570388-d661984ea008?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8TklHSFQlMjBTS1klMjBJTiUyMERFU0VSVHxlbnwwfHwwfHx8MA%3D%3D",
   });
 
-  const [sortOption, setSortOption] = useState('new-to-old');
-  const [userName, setUserName] = useState('John Doe'); // Sample username
-  const [bgImageUrl, setBgImageUrl] = useState('https://media.istockphoto.com/id/1165109078/photo/farlacombe-farm-midnight-july-2019.webp?a=1&b=1&s=612x612&w=0&k=20&c=E3h2oz2dB6Xv1h--BZ4puGx4Xqavhwn6yrKcv5XLuQs='); // Background image URL
-
-  const totalBalance = transactions.reduce((sum, transaction) => sum + transaction.amount, 0);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  const totalAmount = records.reduce((sum, record) => sum + record.amount, 0);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.title || !formData.amount || !formData.date) {
-      alert('Please fill in all fields');
-      return;
-    }
+    if (!newRecord.title || !newRecord.amount || !newRecord.date) return;
 
-    const newTransaction = {
-      id: formData.editingId || transactions.length + 1,
-      title: formData.title,
-      amount: formData.type === 'expense' ? -Number(formData.amount) : Number(formData.amount),
-      date: new Date(formData.date).toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric'
-      }),
-      type: formData.type
-    };
+    const amount =
+      newRecord.type === "expense"
+        ? -Math.abs(parseFloat(newRecord.amount))
+        : Math.abs(parseFloat(newRecord.amount));
+    setRecords([{ id: Date.now(), ...newRecord, amount: amount }, ...records]);
 
-    if (formData.editingId) {
-      // Editing an existing transaction
-      setTransactions(prev => prev.map(t => t.id === formData.editingId ? newTransaction : t));
-    } else {
-      // Adding a new transaction
-      setTransactions(prev => [newTransaction, ...prev]);
-    }
-
-    setFormData({
-      title: '',
-      amount: '',
-      date: '',
-      type: 'expense',
-      editingId: null, // Reset after submit
+    setNewRecord({
+      title: "",
+      amount: "",
+      date: "",
+      type: "expense",
+      backgroundImage: "",
     });
+  };
+
+  const handleSort = (e) => {
+    const sortBy = e.target.value;
+    let sortedRecords;
+
+    switch (sortBy) {
+      case "date(NEW TO OLD)":
+        sortedRecords = [...records].sort(
+          (a, b) => new Date(b.date) - new Date(a.date)
+        );
+        break;
+      case "date(OLD TO NEW)":
+        sortedRecords = [...records].sort(
+          (a, b) => new Date(a.date) - new Date(b.date)
+        );
+        break;
+      case "MAX TO MIN":
+        sortedRecords = [...records].sort((a, b) => b.amount - a.amount);
+        break;
+      case "MIN TO MAX":
+        sortedRecords = [...records].sort((a, b) => a.amount - b.amount);
+        break;
+      default:
+        sortedRecords = [...records];
+    }
+
+    setRecords(sortedRecords);
   };
 
   const handleEdit = (id) => {
-    const transactionToEdit = transactions.find(t => t.id === id);
-    setFormData({
-      title: transactionToEdit.title,
-      amount: Math.abs(transactionToEdit.amount),
-      date: new Date(transactionToEdit.date).toISOString().split('T')[0],
-      type: transactionToEdit.amount < 0 ? 'expense' : 'income',
-      editingId: id,
-    });
+    const recordToEdit = records.find((record) => record.id === id);
+    if (recordToEdit) {
+      setNewRecord({
+        title: recordToEdit.title,
+        amount: Math.abs(recordToEdit.amount),
+        date: recordToEdit.date,
+        type: recordToEdit.amount < 0 ? "expense" : "income",
+        backgroundImage: recordToEdit.backgroundImage || "",
+      });
+      setRecords(records.filter((record) => record.id !== id)); // Remove the record for editing
+    }
   };
 
   const handleDelete = (id) => {
-    setTransactions(prev => prev.filter(t => t.id !== id));
+    setRecords(records.filter((record) => record.id !== id)); // Remove the record
   };
-
-  const handleSignOut = () => {
-    // Handle sign-out logic here
-    setUserName('');
-    alert('Signed out successfully');
-  };
-
-  const sortedTransactions = transactions.slice().sort((a, b) => {
-    if (sortOption === 'min-to-max') {
-      return a.amount - b.amount;
-    } else if (sortOption === 'max-to-min') {
-      return b.amount - a.amount;
-    } else if (sortOption === 'old-to-new') {
-      return new Date(a.date) - new Date(b.date);
-    } else if (sortOption === 'new-to-old') {
-      return new Date(b.date) - new Date(a.date);
-    }
-    return 0;
-  });
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
-      {/* Navbar with User Login */}
-      <nav className="flex items-center justify-between bg-gray-100 px-6 py-4 shadow-md">
-        {/* Left Section: Logo */}
-        <div className="flex items-center">
-          <div className="p-2 bg-blue-500 rounded-full">
-            {/* Placeholder for logo icon */}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6 text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 4.5V19.5M19.5 12H4.5"
-              />
-            </svg>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header - Fixed at top */}
+      <div className="bg-white shadow-sm">
+        <div className="max-w-[1400px] mx-auto p-4">
+          <div className="flex items-center justify-between">
+            <Database className="h-6 w-6 text-blue-600" />
+            <div className="flex items-center gap-4">
+              <span className="text-gray-700">Mutahhir khan</span>
+              <button className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 transition-colors">
+                Sign Out
+              </button>
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Middle Section: Balance */}
-        <div className="text-center flex-1">
-          <h2 className="text-xl font-semibold">Total Balance</h2>
-          <h3 className="text-lg text-gray-600">{totalBalance < 0 ? '- PKR ' : 'PKR '} {Math.abs(totalBalance).toLocaleString()}</h3>
-        </div>
-
-        {/* Right Section: User Info */}
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6 text-gray-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M5.121 17.804A11.96 11.96 0 0112 15c2.672 0 5.119.872 7.121 2.305M12 15V9m0-6C6.477 3 2 7.477 2 13c0 2.637 1.056 5.026 2.757 6.757A11.944 11.944 0 0112 21a11.944 11.944 0 017.243-1.243C20.944 18.026 22 15.637 22 13c0-5.523-4.477-10-10-10z"
-              />
-            </svg>
-            <span className="text-gray-700">{userName}</span>
-          </div>
-          <button 
-            onClick={handleSignOut} 
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Sign Out
-          </button>
-        </div>
-      </nav>
-
-      <div className="flex flex-col lg:flex-row min-h-screen">
+      {/* Main Content with Sidebar */}
+      <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row mt-6">
         {/* Sidebar - Add Record Form */}
-        <div className="lg:w-96 w-full bg-cover bg-center" style={{
-          backgroundImage: `url(${bgImageUrl})`,
-          backgroundSize: 'cover'
-        }}>
-          <div className="h-full w-full bg-black bg-opacity-50 p-8">
-            <h2 className="text-white text-xl font-semibold mb-6">{formData.editingId ? 'Edit Record' : 'Add a Record'}</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="md:w-96 w-full p-4 h-auto md:h-screen flex flex-col justify-center sticky top-6 shadow-lg">
+          <div
+            className="flex flex-col justify-center items-center space-y-6 text-white"
+            style={{
+              backgroundImage: `url(${newRecord.backgroundImage})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              minHeight: "100vh",
+              borderRadius: "10px",
+            }}
+          >
+            <h3 className="text-2xl font-semibold mb-4">Add a Record</h3>
+            <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-sm">
               <input
                 type="text"
-                name="title"
-                value={formData.title}
-                onChange={handleInputChange}
-                placeholder="Transaction Title"
-                className="w-full p-3 bg-white rounded-lg"
+                placeholder="Title"
+                className="w-full bg-transparent border border-gray-300 rounded p-2 focus:outline-none focus:border-gray-500"
+                value={newRecord.title}
+                onChange={(e) =>
+                  setNewRecord({ ...newRecord, title: e.target.value })
+                }
               />
-              <input
-                type="number"
-                name="amount"
-                value={formData.amount}
-                onChange={handleInputChange}
-                placeholder="Amount"
-                className="w-full p-3 bg-white rounded-lg"
-              />
+              <div className="flex gap-4">
+                <select
+                  className="bg-transparent border border-gray-300 rounded p-2 focus:outline-none focus:border-gray-500"
+                  value={newRecord.type}
+                  onChange={(e) =>
+                    setNewRecord({ ...newRecord, type: e.target.value })
+                  }
+                >
+                  <option value="expense">Expense</option>
+                  <option value="income">Income</option>
+                </select>
+                <input
+                  type="number"
+                  placeholder="Amount"
+                  className="flex-1 bg-transparent border border-gray-300 rounded p-2 focus:outline-none focus:border-gray-500"
+                  value={newRecord.amount}
+                  onChange={(e) =>
+                    setNewRecord({ ...newRecord, amount: e.target.value })
+                  }
+                />
+              </div>
               <input
                 type="date"
-                name="date"
-                value={formData.date}
-                onChange={handleInputChange}
-                className="w-full p-3 bg-white rounded-lg"
+                className="w-full bg-transparent border border-gray-300 rounded p-2 focus:outline-none focus:border-gray-500"
+                value={newRecord.date}
+                onChange={(e) =>
+                  setNewRecord({ ...newRecord, date: e.target.value })
+                }
               />
-              <select
-                name="type"
-                value={formData.type}
-                onChange={handleInputChange}
-                className="w-full p-3 bg-white rounded-lg"
+              <input
+                type="hidden"
+                value={newRecord.backgroundImage}
+                onChange={(e) =>
+                  setNewRecord({
+                    ...newRecord,
+                    backgroundImage: e.target.value,
+                  })
+                }
+              />
+              <button
+                type="submit"
+                className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
               >
-                <option value="expense">Expense</option>
-                <option value="income">Income</option>
-              </select>
-              <button 
-                type="submit" 
-                className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >
-                {formData.editingId ? 'Update Transaction' : 'Add Transaction'}
+                <span>+</span> Add
               </button>
             </form>
           </div>
         </div>
 
-        {/* Transaction List */}
-        <div className="lg:flex-1 w-full bg-gray-100 p-6">
-          <div className="mb-4">
-            <h2 className="text-2xl font-semibold">Transaction List</h2>
-            <div className="flex items-center space-x-2">
-              <label>Sort by:</label>
-              <select
-                value={sortOption}
-                onChange={(e) => setSortOption(e.target.value)}
-                className="p-2 border rounded-lg"
-              >
-                <option value="new-to-old">New to Old</option>
-                <option value="old-to-new">Old to New</option>
-                <option value="max-to-min">Max to Min</option>
-                <option value="min-to-max">Min to Max</option>
-              </select>
+        {/* Main Content Area */}
+        <div className="flex-1 p-4">
+          {/* Balance and Sort */}
+          <div className="flex justify-between items-center mb-6">
+            <div className="text-lg">
+              PKR {totalAmount.toLocaleString().replace(/1000/g, "1k")}
             </div>
+            <select
+              className="border rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              onChange={handleSort}
+            >
+              <option value="date(NEW TO OLD)">Date (NEW TO OLD)</option>
+              <option value="date(OLD TO NEW)">Date (OLD TO NEW)</option>
+              <option value="MAX TO MIN">MAX TO MIN</option>
+              <option value="MIN TO MAX">MIN TO MAX</option>
+            </select>
           </div>
 
-          <div className="space-y-4">
-            {sortedTransactions.map((transaction) => (
-              <div key={transaction.id} className="flex justify-between items-center bg-white p-4 rounded-lg shadow-sm">
-                <div>
-                  <h3 className="font-semibold">{transaction.title}</h3>
-                  <p className="text-sm text-gray-500">{transaction.date}</p>
+          {/* Records List - Scrollable and Not Sticky */}
+          <div
+            className="space-y-2 overflow-y-auto max-h-[500px] scrollbar-hide"
+            style={{
+              height: "calc(100vh - 240px)",
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+            }}
+          >
+            {records.map((record) => (
+              <div
+                key={record.id}
+                className="flex items-center justify-between p-4 bg-white rounded-lg shadow"
+              >
+                <div className="flex items-center gap-3">
+                  {record.amount > 0 ? (
+                    <Check className="text-green-500 h-5 w-5" />
+                  ) : (
+                    <X className="text-red-500 h-5 w-5" />
+                  )}
+                  <span>{record.title}</span>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <span className={transaction.type === 'income' ? 'text-green-600' : 'text-red-600'}>
-                    {transaction.type === 'income' ? <ArrowUpRight /> : <ArrowDownRight />}
-                    {transaction.type === 'income' ? `+${transaction.amount}` : transaction.amount}
+
+                <div className="flex items-center gap-4">
+                  <span
+                    className={
+                      record.amount > 0 ? "text-green-500" : "text-red-500"
+                    }
+                  >
+                    {record.amount > 0 ? "PKR " : "-PKR "}
+                    {Math.abs(record.amount) >= 1000
+                      ? `${(Math.abs(record.amount) / 1000).toFixed(1)}k`
+                      : Math.abs(record.amount).toLocaleString()}
                   </span>
-                  <div className="flex space-x-2">
+                  <span className="text-gray-500">
+                    {new Date(record.date).toLocaleDateString("en-US", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </span>
+                  <div className="space-x-2">
                     <button
-                      onClick={() => handleEdit(transaction.id)}
-                      className="text-blue-600 hover:underline"
+                      className="text-gray-500 hover:text-gray-700"
+                      onClick={() => handleEdit(record.id)}
                     >
-                      Edit
+                      EDIT
                     </button>
                     <button
-                      onClick={() => handleDelete(transaction.id)}
-                      className="text-red-600 hover:underline"
+                      className="text-gray-500 hover:text-gray-700"
+                      onClick={() => handleDelete(record.id)}
                     >
-                      Delete
+                      DELETE
                     </button>
                   </div>
                 </div>
@@ -274,4 +328,4 @@ const TransactionList = () => {
   );
 };
 
-export default TransactionList;
+export default ExpenseTracker;
