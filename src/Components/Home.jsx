@@ -1,7 +1,12 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Check, X, Database } from "lucide-react";
+import { useMatch } from "react-router-dom";
 
 const ExpenseTracker = () => {
+  const backgroundImage = useMemo(() => {
+    return "https://images.unsplash.com/photo-1507917570388-d661984ea008?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8TklHSFQlMjBTS1klMjBJTiUyMERFU0VSVHxlbnwwfHwwfHx8MA%3D%3D";
+  }, []);
+
   const initialRecords = [
     {
       id: 1,
@@ -83,8 +88,6 @@ const ExpenseTracker = () => {
     amount: "",
     date: "",
     type: "expense",
-    backgroundImage:
-      "https://images.unsplash.com/photo-1507917570388-d661984ea008?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8TklHSFQlMjBTS1klMjBJTiUyMERFU0VSVHxlbnwwfHwwfHx8MA%3D%3D",
   });
 
   const totalAmount = records.reduce((sum, record) => sum + record.amount, 0);
@@ -104,7 +107,6 @@ const ExpenseTracker = () => {
       amount: "",
       date: "",
       type: "expense",
-      backgroundImage: "",
     });
   };
 
@@ -144,7 +146,6 @@ const ExpenseTracker = () => {
         amount: Math.abs(recordToEdit.amount),
         date: recordToEdit.date,
         type: recordToEdit.amount < 0 ? "expense" : "income",
-        backgroundImage: recordToEdit.backgroundImage || "",
       });
       setRecords(records.filter((record) => record.id !== id)); // Remove the record for editing
     }
@@ -163,7 +164,16 @@ const ExpenseTracker = () => {
             <Database className="h-6 w-6 text-blue-600" />
             <div className="flex items-center gap-4">
               <span className="text-gray-700">Mutahhir khan</span>
-              <button className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 transition-colors">
+              <button className="bg-blue-600 text-white px-4 py-2 flex items-center rounded-full transition-colors">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                  className="w-5 h-5 mr-2"
+                >
+                  <path d="M4 12c0-.552.448-1 1-1h8.586l-1.293-1.293a1 1 0 011.414-1.414l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L13.586 13H5c-.552 0-1-.448-1-1z" />
+                  <path d="M2 12a2 2 0 012-2h.5a.5.5 0 110 1H4a1 1 0 100 2h.5a.5.5 0 110 1H4a2 2 0 01-2-2z" />
+                </svg>
                 Sign Out
               </button>
             </div>
@@ -174,17 +184,10 @@ const ExpenseTracker = () => {
       {/* Main Content with Sidebar */}
       <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row mt-6">
         {/* Sidebar - Add Record Form */}
-        <div className="md:w-96 w-full p-4 h-auto md:h-screen flex flex-col justify-center sticky top-6 shadow-lg">
-          <div
-            className="flex flex-col justify-center items-center space-y-6 text-white"
-            style={{
-              backgroundImage: `url(${newRecord.backgroundImage})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              minHeight: "100vh",
-              borderRadius: "10px",
-            }}
-          >
+        <div style={{
+              backgroundImage: `url(${backgroundImage})`,
+        }} className="md:w-96 w-full p-4 h-auto md:h-screen flex flex-col justify-center sticky text-white top-6 shadow-lg bg-cover bg-center bg-no-repeat">
+          
             <h3 className="text-2xl font-semibold mb-4">Add a Record</h3>
             <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-sm">
               <input
@@ -225,7 +228,7 @@ const ExpenseTracker = () => {
                   setNewRecord({ ...newRecord, date: e.target.value })
                 }
               />
-              <input
+              {/* <input
                 type="hidden"
                 value={newRecord.backgroundImage}
                 onChange={(e) =>
@@ -234,15 +237,14 @@ const ExpenseTracker = () => {
                     backgroundImage: e.target.value,
                   })
                 }
-              />
+              /> */}
               <button
                 type="submit"
-                className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                className="w-full text-white px-4 py-2 rounded  transition-colors flex items-center justify-center gap-2"
               >
                 <span>+</span> Add
               </button>
             </form>
-          </div>
         </div>
 
         {/* Main Content Area */}
@@ -267,7 +269,7 @@ const ExpenseTracker = () => {
           <div
             className="space-y-2 overflow-y-auto max-h-[500px] scrollbar-hide"
             style={{
-              height: "calc(100vh - 240px)",
+              height: "calc(100vh - 240px)", // Adjust this to give enough space for header/footer
               scrollbarWidth: "none",
               msOverflowStyle: "none",
             }}
