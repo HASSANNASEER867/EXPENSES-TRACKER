@@ -1,86 +1,13 @@
 import React, { useMemo, useState } from "react";
-import { Check, X, Database } from "lucide-react";
+import { Check, X, Database, LogOut  } from "lucide-react";
+import { initialRecords } from "../utils/records";
 import { useMatch } from "react-router-dom";
 
-const ExpenseTracker = () => {
+
+const Dashboard = () => {
   const backgroundImage = useMemo(() => {
     return "https://images.unsplash.com/photo-1507917570388-d661984ea008?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8TklHSFQlMjBTS1klMjBJTiUyMERFU0VSVHxlbnwwfHwwfHx8MA%3D%3D";
   }, []);
-
-  const initialRecords = [
-    {
-      id: 1,
-      title: "New machine",
-      amount: -1400,
-      date: "2024-12-28",
-      type: "expense",
-    },
-    { id: 2, title: "Hi", amount: 1, date: "2023-01-10", type: "income" },
-    { id: 3, title: "Wow", amount: 45000, date: "2023-01-09", type: "income" },
-    {
-      id: 4,
-      title: "Booking",
-      amount: -4000,
-      date: "2023-01-08",
-      type: "expense",
-    },
-    {
-      id: 5,
-      title: "Mobile",
-      amount: -100000,
-      date: "2022-11-02",
-      type: "expense",
-    },
-    {
-      id: 6,
-      title: "Chair purchased",
-      amount: -4000,
-      date: "2021-06-01",
-      type: "expense",
-    },
-    {
-      id: 7,
-      title: "Book purchasedd",
-      amount: -2000,
-      date: "2021-05-17",
-      type: "expense",
-    },
-    {
-      id: 8,
-      title: "Lcd purchased",
-      amount: -40000,
-      date: "2021-03-26",
-      type: "expense",
-    },
-    {
-      id: 9,
-      title: "Hehehe",
-      amount: 10000,
-      date: "2021-01-06",
-      type: "income",
-    },
-    {
-      id: 10,
-      title: "Bike",
-      amount: -1500,
-      date: "2020-10-17",
-      type: "expense",
-    },
-    {
-      id: 11,
-      title: "Bike sold",
-      amount: 30000,
-      date: "2020-05-16",
-      type: "income",
-    },
-    {
-      id: 12,
-      title: "Bond open",
-      amount: 100000,
-      date: "2019-01-16",
-      type: "income",
-    },
-  ];
 
   const [records, setRecords] = useState(initialRecords);
   const [newRecord, setNewRecord] = useState({
@@ -156,37 +83,27 @@ const ExpenseTracker = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header - Fixed at top */}
-      <div className="bg-white shadow-sm">
-        <div className="max-w-[1400px] mx-auto p-4">
-          <div className="flex items-center justify-between">
-            <Database className="h-6 w-6 text-blue-600" />
+    <div className="h-screen bg-gray-50 mx-8">
+          {/* HEADER */}
+          <div className="w-full bg-white shadow-sm py-4 flex items-center justify-between">
+            <Database className="h-6 w-6 text-primary" />
+            
             <div className="flex items-center gap-4">
               <span className="text-gray-700">Mutahhir khan</span>
-              <button className="bg-blue-600 text-white px-4 py-2 flex items-center rounded-full transition-colors">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                  className="w-5 h-5 mr-2"
-                >
-                  <path d="M4 12c0-.552.448-1 1-1h8.586l-1.293-1.293a1 1 0 011.414-1.414l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L13.586 13H5c-.552 0-1-.448-1-1z" />
-                  <path d="M2 12a2 2 0 012-2h.5a.5.5 0 110 1H4a1 1 0 100 2h.5a.5.5 0 110 1H4a2 2 0 01-2-2z" />
-                </svg>
+              <button className="bg-primary text-white px-4 py-1 flex items-center gap-2 rounded-full transition-colors">
+                <LogOut size={"16"} strokeWidth={3}/>
                 Sign Out
               </button>
             </div>
+
           </div>
-        </div>
-      </div>
 
       {/* Main Content with Sidebar */}
-      <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row mt-6">
+      <div className=" mx-auto flex flex-col md:flex-row mt-6">
         {/* Sidebar - Add Record Form */}
         <div style={{
               backgroundImage: `url(${backgroundImage})`,
-        }} className="md:w-96 w-full p-4 h-auto md:h-screen flex flex-col justify-center sticky text-white top-6 shadow-lg bg-cover bg-center bg-no-repeat">
+        }} className="px-4 flex flex-col justify-center sticky text-white top-6 shadow-lg bg-cover bg-center bg-no-repeat">
           
             <h3 className="text-2xl font-semibold mb-4">Add a Record</h3>
             <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-sm">
@@ -330,4 +247,4 @@ const ExpenseTracker = () => {
   );
 };
 
-export default ExpenseTracker;
+export default Dashboard;

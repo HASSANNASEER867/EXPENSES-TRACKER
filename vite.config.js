@@ -7,5 +7,12 @@ export default defineConfig({
   server: {
     open: true,
     port: 3000,
-  }
+  },
+  // base: '/',
+  resolve: {
+    alias: {
+      "@": "/src",
+    },
+  },
 })
+
