@@ -1,8 +1,7 @@
 import React, { useMemo, useState } from "react";
-import { Check, X, Database, LogOut  } from "lucide-react";
+import { Check, X, Database, LogOut } from "lucide-react";
 import { initialRecords } from "../utils/records";
 import { useMatch } from "react-router-dom";
-
 
 const Dashboard = () => {
   const backgroundImage = useMemo(() => {
@@ -17,6 +16,9 @@ const Dashboard = () => {
     type: "expense",
   });
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+
   const totalAmount = records.reduce((sum, record) => sum + record.amount, 0);
 
   const handleSubmit = (e) => {
@@ -27,7 +29,19 @@ const Dashboard = () => {
       newRecord.type === "expense"
         ? -Math.abs(parseFloat(newRecord.amount))
         : Math.abs(parseFloat(newRecord.amount));
-    setRecords([{ id: Date.now(), ...newRecord, amount: amount }, ...records]);
+
+    if (isEditing) {
+      const updatedRecords = records.map((record) =>
+        record.id === editingId
+          ? { ...record, ...newRecord, amount }
+          : record
+      );
+      setRecords(updatedRecords);
+      setIsEditing(false);
+      setEditingId(null);
+    } else {
+      setRecords([{ id: Date.now(), ...newRecord, amount }, ...records]);
+    }
 
     setNewRecord({
       title: "",
@@ -74,7 +88,8 @@ const Dashboard = () => {
         date: recordToEdit.date,
         type: recordToEdit.amount < 0 ? "expense" : "income",
       });
-      setRecords(records.filter((record) => record.id !== id)); // Remove the record for editing
+      setIsEditing(true);
+      setEditingId(id);
     }
   };
 
@@ -82,106 +97,121 @@ const Dashboard = () => {
     setRecords(records.filter((record) => record.id !== id)); // Remove the record
   };
 
-  return (
-    <div className="h-screen bg-gray-50 mx-8">
-          {/* HEADER */}
-          <div className="w-full bg-white shadow-sm py-4 flex items-center justify-between">
-            <Database className="h-6 w-6 text-primary" />
-            
-            <div className="flex items-center gap-4">
-              <span className="text-gray-700">Mutahhir khan</span>
-              <button className="bg-primary text-white px-4 py-1 flex items-center gap-2 rounded-full transition-colors">
-                <LogOut size={"16"} strokeWidth={3}/>
-                Sign Out
-              </button>
-            </div>
+  const handleClearForm = () => {
+    setNewRecord({
+      title: "",
+      amount: "",
+      date: "",
+      type: "expense",
+    });
+    setIsEditing(false);
+    setEditingId(null);
+  };
 
-          </div>
+  return (
+    <div className="h-screen bg-gray-50 mx-4 md:mx-8">
+      {/* HEADER */}
+      <div className="w-full bg-white shadow-sm py-4 flex items-center justify-between">
+        <Database className="h-6 w-6 text-primary" />
+
+        <div className="flex items-center gap-4">
+          <span className="text-gray-700">Mutahhir khan</span>
+          <button className="bg-primary text-white px-4 py-1 flex items-center gap-2 rounded-full transition-colors">
+            <LogOut size={"16"} strokeWidth={3} />
+            Sign Out
+          </button>
+        </div>
+      </div>
+
+      <div className="flex justify-between items-center mb-6 flex-wrap gap-6 p-4">
+  {/* Total Amount Section */}
+  <div className="text-lg font-semibold text-gray-800">
+    PKR {totalAmount.toLocaleString().replace(/1000/g, "1k")}
+  </div>
+  
+  {/* Sort Dropdown */}
+  <select
+    className="border rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+    onChange={handleSort}
+  >
+    <option value="date(NEW TO OLD)">Date (NEW TO OLD)</option>
+    <option value="date(OLD TO NEW)">Date (OLD TO NEW)</option>
+    <option value="MAX TO MIN">MAX TO MIN</option>
+    <option value="MIN TO MAX">MIN TO MAX</option>
+  </select>
+</div>
+
 
       {/* Main Content with Sidebar */}
-      <div className=" mx-auto flex flex-col md:flex-row mt-6">
+      <div className="mx-auto flex flex-col md:flex-row mt-6">
         {/* Sidebar - Add Record Form */}
-        <div style={{
-              backgroundImage: `url(${backgroundImage})`,
-        }} className="px-4 flex flex-col justify-center sticky text-white top-6 shadow-lg bg-cover bg-center bg-no-repeat">
-          
-            <h3 className="text-2xl font-semibold mb-4">Add a Record</h3>
-            <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-sm">
-              <input
-                type="text"
-                placeholder="Title"
-                className="w-full bg-transparent border border-gray-300 rounded p-2 focus:outline-none focus:border-gray-500"
-                value={newRecord.title}
+        <div
+          style={{
+            backgroundImage: `url(${backgroundImage})`,
+            backdropFilter: 'drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1))', // Added drop-shadow
+          }}
+          className="px-4 flex flex-col justify-center sticky text-white top-6 shadow-lg bg-cover bg-center bg-no-repeat w-full md:w-1/3 lg:w-1/4"
+        >
+          <h3 className="text-2xl font-semibold mb-4">Add a Record</h3>
+          <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-sm">
+            <input
+              type="text"
+              placeholder="Title"
+              className="w-full bg-transparent border border-gray-300 rounded p-2 focus:outline-none focus:border-gray-500"
+              value={newRecord.title}
+              onChange={(e) =>
+                setNewRecord({ ...newRecord, title: e.target.value })
+              }
+            />
+            <div className="flex gap-4">
+              <select
+                className="bg-transparent border border-gray-300 rounded p-2 focus:outline-none focus:border-gray-500"
+                value={newRecord.type}
                 onChange={(e) =>
-                  setNewRecord({ ...newRecord, title: e.target.value })
+                  setNewRecord({ ...newRecord, type: e.target.value })
+                }
+              >
+                <option value="expense">Expense</option>
+                <option value="income">Income</option>
+              </select>
+              <input
+                type="number"
+                placeholder="Amount"
+                className="flex-1 bg-transparent border border-gray-300 rounded p-2 focus:outline-none focus:border-gray-500"
+                value={newRecord.amount}
+                onChange={(e) =>
+                  setNewRecord({ ...newRecord, amount: e.target.value })
                 }
               />
-              <div className="flex gap-4">
-                <select
-                  className="bg-transparent border border-gray-300 rounded p-2 focus:outline-none focus:border-gray-500"
-                  value={newRecord.type}
-                  onChange={(e) =>
-                    setNewRecord({ ...newRecord, type: e.target.value })
-                  }
-                >
-                  <option value="expense">Expense</option>
-                  <option value="income">Income</option>
-                </select>
-                <input
-                  type="number"
-                  placeholder="Amount"
-                  className="flex-1 bg-transparent border border-gray-300 rounded p-2 focus:outline-none focus:border-gray-500"
-                  value={newRecord.amount}
-                  onChange={(e) =>
-                    setNewRecord({ ...newRecord, amount: e.target.value })
-                  }
-                />
-              </div>
-              <input
-                type="date"
-                className="w-full bg-transparent border border-gray-300 rounded p-2 focus:outline-none focus:border-gray-500"
-                value={newRecord.date}
-                onChange={(e) =>
-                  setNewRecord({ ...newRecord, date: e.target.value })
-                }
-              />
-              {/* <input
-                type="hidden"
-                value={newRecord.backgroundImage}
-                onChange={(e) =>
-                  setNewRecord({
-                    ...newRecord,
-                    backgroundImage: e.target.value,
-                  })
-                }
-              /> */}
+            </div>
+            <input
+              type="date"
+              className="w-full bg-transparent border border-gray-300 rounded p-2 focus:outline-none focus:border-gray-500"
+              value={newRecord.date}
+              onChange={(e) =>
+                setNewRecord({ ...newRecord, date: e.target.value })
+              }
+            />
+            <div className="flex justify-between gap-4">
               <button
                 type="submit"
-                className="w-full text-white px-4 py-2 rounded  transition-colors flex items-center justify-center gap-2"
+                className="w-full text-white px-4 py-2 rounded transition-colors flex items-center justify-center gap-2"
               >
-                <span>+</span> Add
+                <span>+</span> {isEditing ? "Update" : "Add"}
               </button>
-            </form>
+              <button
+                type="button"
+                className="w-full text-white px-4 py-2 rounded transition-colors flex items-center justify-center gap-2"
+                onClick={handleClearForm}
+              >
+                Clear
+              </button>
+            </div>
+          </form>
         </div>
 
         {/* Main Content Area */}
         <div className="flex-1 p-4">
-          {/* Balance and Sort */}
-          <div className="flex justify-between items-center mb-6">
-            <div className="text-lg">
-              PKR {totalAmount.toLocaleString().replace(/1000/g, "1k")}
-            </div>
-            <select
-              className="border rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              onChange={handleSort}
-            >
-              <option value="date(NEW TO OLD)">Date (NEW TO OLD)</option>
-              <option value="date(OLD TO NEW)">Date (OLD TO NEW)</option>
-              <option value="MAX TO MIN">MAX TO MIN</option>
-              <option value="MIN TO MAX">MIN TO MAX</option>
-            </select>
-          </div>
-
           {/* Records List - Scrollable and Not Sticky */}
           <div
             className="space-y-2 overflow-y-auto max-h-[500px] scrollbar-hide"
@@ -205,11 +235,9 @@ const Dashboard = () => {
                   <span>{record.title}</span>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-6"> {/* Add gap here */}
                   <span
-                    className={
-                      record.amount > 0 ? "text-green-500" : "text-red-500"
-                    }
+                    className={record.amount > 0 ? "text-green-500" : "text-red-500"}
                   >
                     {record.amount > 0 ? "PKR " : "-PKR "}
                     {Math.abs(record.amount) >= 1000
