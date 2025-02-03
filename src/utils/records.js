@@ -31,7 +31,7 @@ export const initialRecords = [
     },
     {
       id: 7,
-      title: "Book purchasedd",
+      title: "Book purchased",
       amount: -2000,
       date: "2021-05-17",
       type: "expense",

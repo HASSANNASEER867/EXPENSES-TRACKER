@@ -4,14 +4,13 @@ import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBrgouLEepdHZ1-2N74aOT5anWYilYLXhM",
-    authDomain: "expense-tracker-c9e6a.firebaseapp.com",
-    databaseURL: "https://expense-tracker-c9e6a-default-rtdb.firebaseio.com",
-    projectId: "expense-tracker-c9e6a",
-    storageBucket: "expense-tracker-c9e6a.firebasestorage.app",
-    messagingSenderId: "483725684301",
-    appId: "1:483725684301:web:ed86d0ed2885cd9b8c7604"
-  };
+  apiKey: "AIzaSyDyd3SCioY0UuaBlHxL1-je1O2gYai2tvI",
+  authDomain: "expense-tracker-d5e95.firebaseapp.com",
+  projectId: "expense-tracker-d5e95",
+  storageBucket: "expense-tracker-d5e95.firebasestorage.app",
+  messagingSenderId: "776967212638",
+  appId: "1:776967212638:web:0c294f494b0586419e6ecf"
+};
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
