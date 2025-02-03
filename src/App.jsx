@@ -1,4 +1,3 @@
-// App.jsx
 
 import React from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom"; 
@@ -12,7 +11,6 @@ function App() {
       <Routes>
         <Route path="/" element={<Signup />} />
         <Route path="/dashboard" element={<Dashboard/>} />
-        {/* Add other routes here */}
       </Routes>
     </BrowserRouter>
   );

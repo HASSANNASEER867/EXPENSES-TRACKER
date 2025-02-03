@@ -94,7 +94,7 @@ const Dashboard = () => {
   };
 
   const handleDelete = (id) => {
-    setRecords(records.filter((record) => record.id !== id)); // Remove the record
+    setRecords(records.filter((record) => record.id !== id)); 
   };
 
   const handleClearForm = () => {
@@ -124,12 +124,10 @@ const Dashboard = () => {
       </div>
 
       <div className="flex justify-between items-center mb-6 flex-wrap gap-6 p-4">
-  {/* Total Amount Section */}
   <div className="text-lg font-semibold text-gray-800">
     PKR {totalAmount.toLocaleString().replace(/1000/g, "1k")}
   </div>
   
-  {/* Sort Dropdown */}
   <select
     className="border rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
     onChange={handleSort}
@@ -141,14 +139,11 @@ const Dashboard = () => {
   </select>
 </div>
 
-
-      {/* Main Content with Sidebar */}
       <div className="mx-auto flex flex-col md:flex-row mt-6">
-        {/* Sidebar - Add Record Form */}
         <div
           style={{
             backgroundImage: `url(${backgroundImage})`,
-            backdropFilter: 'drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1))', // Added drop-shadow
+            backdropFilter: 'drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1))', 
           }}
           className="px-4 flex flex-col justify-center sticky text-white top-6 shadow-lg bg-cover bg-center bg-no-repeat w-full md:w-1/3 lg:w-1/4"
         >
@@ -210,13 +205,11 @@ const Dashboard = () => {
           </form>
         </div>
 
-        {/* Main Content Area */}
         <div className="flex-1 p-4">
-          {/* Records List - Scrollable and Not Sticky */}
           <div
             className="space-y-2 overflow-y-auto max-h-[500px] scrollbar-hide"
             style={{
-              height: "calc(100vh - 240px)", // Adjust this to give enough space for header/footer
+              height: "calc(100vh - 240px)", 
               scrollbarWidth: "none",
               msOverflowStyle: "none",
             }}
@@ -235,7 +228,7 @@ const Dashboard = () => {
                   <span>{record.title}</span>
                 </div>
 
-                <div className="flex items-center gap-6"> {/* Add gap here */}
+                <div className="flex items-center gap-6"> 
                   <span
                     className={record.amount > 0 ? "text-green-500" : "text-red-500"}
                   >

@@ -82,7 +82,7 @@ const AuthForms = () => {
       );
       setAlert("Sign Up Successful! Redirecting to Sign In...");
       setTimeout(() => {
-        toggleFlip(); // Switch to sign-in after sign-up
+        toggleFlip();
       }, 3000);
     } catch (error) {
       setAlert(error.message);
@@ -128,7 +128,6 @@ const AuthForms = () => {
       <div className="min-h-screen relative flex items-center justify-center">
         <div className="relative w-96 h-96">
           <ReactCardFlip flipDirection="horizontal" isFlipped={isFlipped}>
-            {/* Sign Up Form */}
             <div className="w-full h-full rounded-full bg-white/20 backdrop-blur-sm p-8 flex flex-col items-center justify-center shadow-xl">
               <div className="w-64">
                 <h2 className="text-xl font-bold mb-4 text-gray-800 text-center">
@@ -181,7 +180,6 @@ const AuthForms = () => {
               </div>
             </div>
 
-            {/* Sign In Form */}
             <div className="w-full h-full rounded-full bg-white/20 backdrop-blur-sm p-8 flex flex-col items-center justify-center shadow-xl">
               <div className="w-64">
                 <h2 className="text-xl font-bold mb-4 text-gray-800 text-center">
@@ -258,7 +256,6 @@ const AuthForms = () => {
                   <span style={{ color: "#34A853" }}>Google</span>
                 </div>
                 
-                {/* Removed gap between Google Sign-In and Forgot Password */}
                 <button
                   onClick={handleForgotPassword}
                   className="text-blue-600 hover:underline text-xs mt-0 mx-auto block"
@@ -281,7 +278,6 @@ const AuthForms = () => {
         </div>
       </div>
 
-      {/* Alert Section */}
       {alert && (
         <div
           className="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-red-500 text-white py-2 px-4 rounded-lg shadow-lg"
