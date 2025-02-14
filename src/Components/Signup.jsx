@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ReactCardFlip from "react-card-flip";
-import { auth, googleProvider } from "../firebaseConfig";
+import { auth, db, doc, googleProvider, getDoc, setDoc } from "../firebaseConfig";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -54,17 +54,38 @@ const AuthForms = () => {
     }
 
     try {
-      await signInWithEmailAndPassword(
+      const userInfo  = await signInWithEmailAndPassword(
         auth,
         signInData.email,
         signInData.password
       );
+      await saveUserToFirestore(userInfo.user);
       setAlert("Sign In Successful!");
     } catch (error) {
       setAlert(error.message);
     }
     setTimeout(() => setAlert(null), 3000);
   };
+
+  async function saveUserToFirestore(user, additionalData = {}) {
+    try {
+      const userRef = doc(db, "users", user.uid);
+      const UserData = {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName || additionalData.displayName,
+        photoURL: user.photoURL || "",
+        ...additionalData,
+        createdAt: new Date().toISOString(),
+      };
+      localStorage.setItem("user", JSON.stringify(UserData));
+      await setDoc(userRef, UserData, { merge: true });
+      
+      return UserData;
+    } catch (error) {
+      console.error("Error creating user document", error);
+    }
+  }
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -75,11 +96,13 @@ const AuthForms = () => {
     }
 
     try {
-      await createUserWithEmailAndPassword(
+      const userInfo = await createUserWithEmailAndPassword(
         auth,
         signUpData.email,
         signUpData.password
       );
+      await saveUserToFirestore(userInfo.user);
+
       setAlert("Sign Up Successful! Redirecting to Sign In...");
       setTimeout(() => {
         toggleFlip();
@@ -92,7 +115,9 @@ const AuthForms = () => {
 
   const handleGoogleSignIn = async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
+      const userInfo = await signInWithPopup(auth, googleProvider);
+      await saveUserToFirestore(userInfo.user);
+
       setAlert("Google Sign-In Successful!");
     } catch (error) {
       setAlert(error.message);
@@ -255,7 +280,7 @@ const AuthForms = () => {
                   </span>
                   <span style={{ color: "#34A853" }}>Google</span>
                 </div>
-                
+
                 <button
                   onClick={handleForgotPassword}
                   className="text-blue-600 hover:underline text-xs mt-0 mx-auto block"

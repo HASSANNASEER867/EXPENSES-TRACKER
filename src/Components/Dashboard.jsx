@@ -2,6 +2,8 @@ import React, { useMemo, useState } from "react";
 import { Check, X, Database, LogOut } from "lucide-react";
 import { initialRecords } from "../utils/records";
 import { useMatch } from "react-router-dom";
+import { v4 as generateId } from 'uuid';
+import { db, setDoc, getDoc, doc } from "./../firebaseConfig";
 
 const Dashboard = () => {
   const backgroundImage = useMemo(() => {
@@ -21,35 +23,53 @@ const Dashboard = () => {
 
   const totalAmount = records.reduce((sum, record) => sum + record.amount, 0);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!newRecord.title || !newRecord.amount || !newRecord.date) return;
+  const handleSubmit = async (e) => {
+    try {
+      e.preventDefault();
+      if (!newRecord.title || !newRecord.amount || !newRecord.date) return;
 
-    const amount =
-      newRecord.type === "expense"
-        ? -Math.abs(parseFloat(newRecord.amount))
-        : Math.abs(parseFloat(newRecord.amount));
+      const amount =
+        newRecord.type === "expense"
+          ? -Math.abs(parseFloat(newRecord.amount))
+          : Math.abs(parseFloat(newRecord.amount));
 
-    if (isEditing) {
-      const updatedRecords = records.map((record) =>
-        record.id === editingId
-          ? { ...record, ...newRecord, amount }
-          : record
-      );
-      setRecords(updatedRecords);
-      setIsEditing(false);
-      setEditingId(null);
-    } else {
-      setRecords([{ id: Date.now(), ...newRecord, amount }, ...records]);
+      if (isEditing) {
+        const updatedRecords = records.map((record) =>
+          record.id === editingId ? { ...record, ...newRecord, amount } : record
+        );
+        setRecords(updatedRecords);
+        setIsEditing(false);
+        setEditingId(null);
+      } else {
+        const record = { id: Date.now(), ...newRecord, amount };
+        setRecords([record]);
+        await saveRecordToFirestore(record);
+      }
+
+      setNewRecord({
+        title: "",
+        amount: "",
+        date: "",
+        type: "expense",
+      });
+    } catch (error) {
+      console.log("Error adding new record", error);
     }
-
-    setNewRecord({
-      title: "",
-      amount: "",
-      date: "",
-      type: "expense",
-    });
   };
+
+  async function saveRecordToFirestore(record) {
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      console.log("user", user);
+      if (!user || !user.uid) {
+        throw new Error("User ID is missing");
+      }
+      const recordRef = doc(db, user.uid, generateId());
+      await setDoc(recordRef, record, { merge: true });
+    } catch (error) {
+      console.error("Error creating new record in firestore", error);
+    }
+  }
 
   const handleSort = (e) => {
     const sortBy = e.target.value;
@@ -94,7 +114,7 @@ const Dashboard = () => {
   };
 
   const handleDelete = (id) => {
-    setRecords(records.filter((record) => record.id !== id)); 
+    setRecords(records.filter((record) => record.id !== id));
   };
 
   const handleClearForm = () => {
@@ -124,26 +144,26 @@ const Dashboard = () => {
       </div>
 
       <div className="flex justify-between items-center mb-6 flex-wrap gap-6 p-4">
-  <div className="text-lg font-semibold text-gray-800">
-    PKR {totalAmount.toLocaleString().replace(/1000/g, "1k")}
-  </div>
-  
-  <select
-    className="border rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-    onChange={handleSort}
-  >
-    <option value="date(NEW TO OLD)">Date (NEW TO OLD)</option>
-    <option value="date(OLD TO NEW)">Date (OLD TO NEW)</option>
-    <option value="MAX TO MIN">MAX TO MIN</option>
-    <option value="MIN TO MAX">MIN TO MAX</option>
-  </select>
-</div>
+        <div className="text-lg font-semibold text-gray-800">
+          PKR {totalAmount.toLocaleString().replace(/1000/g, "1k")}
+        </div>
+
+        <select
+          className="border rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          onChange={handleSort}
+        >
+          <option value="date(NEW TO OLD)">Date (NEW TO OLD)</option>
+          <option value="date(OLD TO NEW)">Date (OLD TO NEW)</option>
+          <option value="MAX TO MIN">MAX TO MIN</option>
+          <option value="MIN TO MAX">MIN TO MAX</option>
+        </select>
+      </div>
 
       <div className="mx-auto flex flex-col md:flex-row mt-6">
         <div
           style={{
             backgroundImage: `url(${backgroundImage})`,
-            backdropFilter: 'drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1))', 
+            backdropFilter: "drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1))",
           }}
           className="px-4 flex flex-col justify-center sticky text-white top-6 shadow-lg bg-cover bg-center bg-no-repeat w-full md:w-1/3 lg:w-1/4"
         >
@@ -209,7 +229,7 @@ const Dashboard = () => {
           <div
             className="space-y-2 overflow-y-auto max-h-[500px] scrollbar-hide"
             style={{
-              height: "calc(100vh - 240px)", 
+              height: "calc(100vh - 240px)",
               scrollbarWidth: "none",
               msOverflowStyle: "none",
             }}
@@ -228,9 +248,11 @@ const Dashboard = () => {
                   <span>{record.title}</span>
                 </div>
 
-                <div className="flex items-center gap-6"> 
+                <div className="flex items-center gap-6">
                   <span
-                    className={record.amount > 0 ? "text-green-500" : "text-red-500"}
+                    className={
+                      record.amount > 0 ? "text-green-500" : "text-red-500"
+                    }
                   >
                     {record.amount > 0 ? "PKR " : "-PKR "}
                     {Math.abs(record.amount) >= 1000
